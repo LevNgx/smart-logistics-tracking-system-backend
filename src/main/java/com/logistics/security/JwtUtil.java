@@ -33,6 +33,7 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             parseToken(token);
+            System.out.println("printing here" + token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;

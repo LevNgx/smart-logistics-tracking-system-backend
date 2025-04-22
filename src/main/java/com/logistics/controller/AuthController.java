@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -38,7 +41,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try{
             System.out.println(request + " " +  request.getUsername());
             Authentication auth = authenticationManager.authenticate(
@@ -47,11 +50,13 @@ public class AuthController {
             System.out.println("authentication" + auth);
             // Return token (JWT) here later
             String token = jwtUtil.generateToken(request.getUsername());
-            return ResponseEntity.ok("Login successful" + token);
+            return ResponseEntity.ok( token);
         }
         catch (Exception e){
             System.out.println("Exception"  + e);
-            return ResponseEntity.ok("Login failed : " + e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Invalid Username or Password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
     }
@@ -70,5 +75,7 @@ public class AuthController {
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully");
     }
+
+
 }
 
